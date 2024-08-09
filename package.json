@@ -4,8 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"bs": "tsc --build --verbose",
-		"dev": "node --env-file=.env --watch -r ts-node/register src/index.ts"
+		"bs": "tsc --build --verbose"
 	},
 	"keywords": [],
 	"author": "",
