@@ -19,10 +19,10 @@ export async function sendEventNotificiation(args: EventProps) {
 		process.exit(1);
 	}
 
-	client.on("ready", async (daw) => {
+	await spawn_discord_client(async (client) => {
 		logger("INFO", `Logged in as ${client.user?.tag}!`);
 
-		const channel = daw.channels.cache.get(config.channelId);
+		const channel = client.channels.cache.get(config.channelId);
 
 		if (!channel) {
 			logger("ERROR", "Channel not found!");
@@ -39,13 +39,20 @@ export async function sendEventNotificiation(args: EventProps) {
 		await channel.send({ embeds: [embed] });
 		await client.destroy();
 	});
+}
 
-	client.on("interactionCreate", async (interaction) => {
-		if (!interaction.isChatInputCommand()) return;
+async function spawn_discord_client(
+	callback: (client: Client<true>) => Promise<void>,
+) {
+	const config = await loadConfig();
 
-		if (interaction.commandName === "ping") {
-			await interaction.reply("Pong!");
-		}
+	if (!config) {
+		logger("ERROR", "Discord Client cannot run without a config file!");
+		process.exit(1);
+	}
+
+	client.on("ready", async (client) => {
+		callback(client);
 	});
 
 	client.login(config.botToken);
